@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Step1 from "./components/Step1Objective";
 import Step2 from "./components/Step2KRs";
 import Step3 from "./components/Step3Epics";
 import Step4 from "./components/Step4Stories";
 import Step5 from "./components/Step5Tasks";
 import ReviewExport from "./components/ReviewExport";
+import ApiKeyModal from "./components/ApiKeyModal";
 import * as api from "./api";
 
 export default function App(){
@@ -14,17 +15,25 @@ export default function App(){
   const [epics, setEpics] = useState([]);
   const [structure, setStructure] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
+  const [geminiApiKey, setGeminiApiKey] = useState('');
 
   const stepTitles = [
     "", "Define Objective", "Select Key Result", "Plan Epics", "Create Stories", "Generate Tasks", "Review & Export"
   ];
+
+  // Load API key from localStorage on startup
+  useEffect(() => {
+    const savedKey = localStorage.getItem('gemini_api_key') || '';
+    setGeminiApiKey(savedKey);
+  }, []);
 
   async function createSession(text){
     setLoading(true);
     try {
       const res = await api.createSession(text);
       setSession(res.session_id);
-      const k = await api.suggestKRs(res.session_id);
+      const k = await api.suggestKRs(text, geminiApiKey);
       setKrs(k.krs || []);
       setStep(2);
     } catch (error) {
@@ -34,10 +43,10 @@ export default function App(){
     }
   }
 
-  async function selectKR(kr_id){
+  async function selectKR(selected_kr){
     setLoading(true);
     try {
-      const e = await api.generateEpics(session, kr_id);
+      const e = await api.generateEpics(session, selected_kr, geminiApiKey);
       setEpics(e.epics || []);
       setStep(3);
     } catch (error) {
@@ -47,10 +56,10 @@ export default function App(){
     }
   }
 
-  async function generateStories(feature_id){
+  async function generateStories(selected_feature){
     setLoading(true);
     try {
-      await api.generateStories(session, feature_id);
+      await api.generateStories(session, selected_feature, geminiApiKey);
       const s = await api.exportJSON(session);
       setEpics(s.epics || []);
       setStructure(s);
@@ -62,10 +71,10 @@ export default function App(){
     }
   }
 
-  async function generateTasks(story_id){
+  async function generateTasks(selected_story){
     setLoading(true);
     try {
-      await api.generateTasks(session, story_id);
+      await api.generateTasks(session, selected_story, geminiApiKey);
       const s = await api.exportJSON(session);
       setEpics(s.epics || []);
       setStructure(s);
@@ -105,12 +114,27 @@ export default function App(){
               </div>
             </div>
             
-            {session && (
-              <div className="text-right">
-                <div className="text-sm text-gray-500">Session ID</div>
-                <div className="text-xs font-mono text-gray-400">{session.substring(0, 8)}...</div>
-              </div>
-            )}
+            <div className="flex items-center space-x-4">
+              {/* API Key Status */}
+              <button
+                onClick={() => setApiKeyModalOpen(true)}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  geminiApiKey 
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                    : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                }`}
+              >
+                <span>{geminiApiKey ? '🔑' : '⚠️'}</span>
+                <span>{geminiApiKey ? 'API Configured' : 'Configure API'}</span>
+              </button>
+
+              {session && (
+                <div className="text-right">
+                  <div className="text-sm text-gray-500">Session ID</div>
+                  <div className="text-xs font-mono text-gray-400">{session.substring(0, 8)}...</div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -200,6 +224,13 @@ export default function App(){
           </div>
         </div>
       )}
+
+      {/* API Key Configuration Modal */}
+      <ApiKeyModal 
+        isOpen={apiKeyModalOpen}
+        onClose={() => setApiKeyModalOpen(false)}
+        onSave={(key) => setGeminiApiKey(key)}
+      />
     </div>
   );
 }

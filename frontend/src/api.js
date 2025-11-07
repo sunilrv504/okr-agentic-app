@@ -1,43 +1,61 @@
-const API_BASE = "http://localhost:8000";
+// API Configuration
+const API_BASE = process.env.NODE_ENV === 'production' 
+  ? (process.env.REACT_APP_API_URL || '/api')
+  : 'http://localhost:8000';
 
 export async function createSession(objective) {
   const r = await fetch(`${API_BASE}/session`, {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({text: objective})
+    body: JSON.stringify({objective: objective})
   });
   return r.json();
 }
 
-export async function suggestKRs(session_id){
+export async function suggestKRs(objective, geminiApiKey = ''){
   const r = await fetch(`${API_BASE}/suggest_krs`, {
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({session_id})
+    body: JSON.stringify({
+      objective: objective,
+      gemini_api_key: geminiApiKey
+    })
   });
   return r.json();
 }
 
-export async function generateEpics(session_id, kr_id){
+export async function generateEpics(session_id, selected_kr, geminiApiKey = ''){
   const r = await fetch(`${API_BASE}/generate_epics`, {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({session_id, kr_id})
+    body: JSON.stringify({
+      session_id, 
+      selected_kr,
+      gemini_api_key: geminiApiKey
+    })
   });
   return r.json();
 }
 
-export async function generateStories(session_id, feature_id){
+export async function generateStories(session_id, selected_feature, geminiApiKey = ''){
   const r = await fetch(`${API_BASE}/generate_stories`, {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({session_id, feature_id})
+    body: JSON.stringify({
+      session_id, 
+      selected_feature,
+      gemini_api_key: geminiApiKey
+    })
   });
   return r.json();
 }
 
-export async function generateTasks(session_id, story_id){
+export async function generateTasks(session_id, selected_story, geminiApiKey = ''){
   const r = await fetch(`${API_BASE}/generate_tasks`, {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({session_id, story_id})
+    body: JSON.stringify({
+      session_id, 
+      selected_story,
+      gemini_api_key: geminiApiKey
+    })
   });
   return r.json();
 }
