@@ -14,7 +14,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-  "homepage": "https://yourusername.github.io/okr-agentic-app",
+  "homepage": "https://sunilrv504.github.io/okr-agentic-app",
   "browserslist": {
     "production": [
       ">0.2%",
