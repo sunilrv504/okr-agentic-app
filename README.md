@@ -1,4 +1,6 @@
-# OKR Agentic App
+# OKR Agentic Planning Application
+
+<!-- Deployment trigger -->
 
 A complete web application that takes an **Objective** as input, suggests relevant **Key Results**, and upon user selection generates a comprehensive project breakdown including EPICs, Features, User Stories with Acceptance Criteria, Story-Point Estimates, and Associated Tasks with Hour Estimates.
 
@@ -354,5 +356,6 @@ This project is provided as a development scaffold. Adjust licensing as needed f
 
 ---
 
-**Note:** This scaffold provides a complete foundation for the OKR Agentic App. Configure the Gemini API credentials and start both servers to begin using the application.#   F r e s h   d e p l o y m e n t   t r i g g e r  
+**Note:** This scaffold provides a complete foundation for the OKR Agentic App. Configure the Gemini API credentials and start both servers to begin using the application.#   F r e s h   d e p l o y m e n t   t r i g g e r 
+ 
  
