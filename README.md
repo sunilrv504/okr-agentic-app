@@ -354,4 +354,5 @@ This project is provided as a development scaffold. Adjust licensing as needed f
 
 ---
 
-**Note:** This scaffold provides a complete foundation for the OKR Agentic App. Configure the Gemini API credentials and start both servers to begin using the application.
+**Note:** This scaffold provides a complete foundation for the OKR Agentic App. Configure the Gemini API credentials and start both servers to begin using the application.#   F r e s h   d e p l o y m e n t   t r i g g e r  
+ 
